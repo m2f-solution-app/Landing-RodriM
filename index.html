@@ -26,6 +26,14 @@ img,video{max-width:100%}
 .hero-text .in{max-width:none}
 }
 </style>
+<script>
+try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('intro');setTimeout(function(){document.documentElement.classList.remove('intro')},7000)}}catch(e){}
+</script>
+<style>
+.intro .hero-video,.intro .hero-fade,.intro .hero-text .in>*{opacity:0}
+.hero-skip{position:absolute; top:18px; right:22px; z-index:5; background:rgba(17,20,24,.7); color:#F3F1EC; border:1px solid #4A525B; border-radius:999px; padding:8px 16px; font:500 13px 'Inter',system-ui,sans-serif; cursor:pointer}
+.hero-skip:hover{border-color:#C8F03C}
+</style>
 </head>
 <body>
 
@@ -321,5 +329,35 @@ img,video{max-width:100%}
 
 </div>
 
+<script>
+(function(){
+var root=document.documentElement;
+if(!root.classList.contains('intro'))return;
+try{
+var hero=document.getElementById('inicio');
+var vid=hero.querySelector('.hero-video'), fade=hero.querySelector('.hero-fade');
+var kids=Array.prototype.slice.call(hero.querySelectorAll('.hero-text .in>*'));
+var anims=[];
+function A(el,kf,o){var a=el.animate(kf,o);anims.push(a);return a}
+var v=A(vid,[
+{transform:'translateY(-115%) rotate(-540deg) scale(.45)',opacity:0,offset:0},
+{opacity:1,offset:.08},
+{transform:'translateY(0) rotate(0) scale(1)',opacity:1,offset:.6},
+{transform:'translateY(-5%) rotate(0) scale(1)',opacity:1,offset:.76},
+{transform:'translateY(0) rotate(0) scale(1)',opacity:1,offset:.88},
+{transform:'translateY(-1.5%) rotate(0) scale(1)',opacity:1,offset:.95},
+{transform:'translateY(0) rotate(0) scale(1)',opacity:1,offset:1}
+],{duration:1600,fill:'forwards',easing:'cubic-bezier(.45,0,.9,.6)'});
+A(fade,[{opacity:0},{opacity:1}],{duration:600,delay:1450,fill:'forwards'});
+var last;
+kids.forEach(function(k,i){last=A(k,[{opacity:0,transform:'translateX(-48px)'},{opacity:1,transform:'translateX(0)'}],{duration:650,delay:1650+i*150,fill:'forwards',easing:'cubic-bezier(.2,.8,.2,1)'});});
+var btn=document.createElement('button');btn.className='hero-skip';btn.type='button';btn.textContent='Saltar';hero.appendChild(btn);
+var done=false;
+function finish(){if(done)return;done=true;root.classList.remove('intro');anims.forEach(function(a){try{a.cancel()}catch(e){}});if(btn.parentNode)btn.parentNode.removeChild(btn);}
+last.onfinish=finish;
+btn.addEventListener('click',finish);
+}catch(e){root.classList.remove('intro');}
+})();
+</script>
 </body>
 </html>
